@@ -1,0 +1,661 @@
+openapi: "3.0.2"
+info:
+  title: Kua.ai Weaver API
+  version: "1.0"
+servers:
+  - url: https://api-beta.kua.ai/weaver/api/v2
+paths:
+  /products:
+    get:
+      description: "List the Products imported"
+      operationId: ListProducts
+      parameters:
+      - in: query
+        name: genre
+        required: false
+        schema:
+          $ref: '#/components/schemas/ProductGenre'
+      - in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          minimum: 1
+          type: integer
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+  /products/custom:
+    post:
+      summary: Create Custom Product
+      description: "Create a Custom Product from your product specification"
+      operationId: CreateCustomProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomProductRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomProduct'
+  /products/{id}:
+    get:
+      summary: Get Product
+      operationId: GetProduct
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            title: Id
+            type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/CustomProduct'
+                  - $ref: '#/components/schemas/AmazonProduct'
+    delete:
+      summary: Delete Product
+      operationId: DeleteProduct
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            title: Id
+            type: string
+      responses:
+        '204':
+          description: Successful Response
+  /products/import/amazon:
+    post:
+      summary: Import Amazon Products
+      operationId: ImportAmazonProducts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAmazonImportJobRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportJob'
+          description: Successful Response
+  /products/import/{id}:
+    get:
+      summary: Get Import Job
+      operationId: GetImportJob
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            title: Id
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportJob'
+          description: Successful Response
+  /generations:
+    get:
+      operationId: ListGenerations
+      summary: List Generations
+      parameters:
+        - in: query
+          name: applicationId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/GenerationStatus'
+        - in: query
+          name: nextToken
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            minimum: 1
+            default: 10
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationSummaryList'
+          description: Successful Response
+    post:
+      operationId: CreateGeneration
+      summary: Create Generation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGenerationRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+          description: Successful Response
+  /generations/{id}:
+    get:
+      operationId: GetGeneration
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+          description: Successful Response
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: '未认证成功错误'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                $ref: '#/components/schemas/ErrorBody'
+            required: [ error ]
+    Error:
+      description: '用户请求错误, 包括: 400, 401, 404等'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                $ref: '#/components/schemas/ErrorBody'
+            required: [ error ]
+    Fault:
+      description: '服务内部错误, 请联系管理员'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FaultBody'
+  schemas:
+    GenerationStatus:
+      enum:
+        - RUNNING
+        - SUCCESS
+        - FAILED
+      type: string
+    KInputType:
+      enum:
+        - TEXT
+        - PRODUCT
+        - AMAZON_PRODUCT
+        - SHOPIFY_PRODUCT
+        - ALIBABA_PRODUCT
+      type: string
+    KOutputType:
+      enum:
+        - TEXT
+        - RESULTS
+      type: string
+    KResults:
+      type: object
+      properties:
+        results:
+          type: object
+          additionalProperties:
+            type: string
+    KProduct:
+      type: object
+      properties:
+        brand:
+          type: string
+        description:
+          type: string
+        feature:
+          type: string
+        id:
+          type: string
+        images:
+          items:
+            type: string
+          type: array
+        keywords:
+          items:
+            type: string
+          type: array
+        link:
+          type: string
+        specification:
+          type: string
+        title:
+          type: string
+        videos:
+          type: array
+          items:
+            type: string
+    ErrorHint:
+      type: object
+      properties:
+        en:
+          type: string
+        zh:
+          type: string
+    LLMFamily:
+      enum:
+        - gpt-3.5-turbo
+        - gpt-4
+        - gpt-4o
+        - claude-3-sonnet
+        - claude-3-haiku
+      type: string
+    Environment:
+      type: object
+      properties:
+        language:
+          type: string
+        model:
+          $ref: '#/components/schemas/LLMFamily'
+          default: gpt-3.5-turbo
+        system_prompt:
+          type: string
+        temperature:
+          default: 0.7
+          type: number
+        tone:
+          type: string
+        writing_style:
+          type: string
+    Generation:
+      type: object
+      properties:
+        accountId:
+          type: string
+        applicationId:
+          type: string
+        applicationName:
+          type: string
+        completedAt:
+          type: integer
+        createdAt:
+          type: integer
+        documentId:
+          type: string
+        documentTitle:
+          type: string
+        errorCode:
+          type: string
+        errorMessage:
+          $ref: '#/components/schemas/ErrorHint'
+        id:
+          type: string
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+        invocationId:
+          type: string
+        productId:
+          type: string
+        productTitle:
+          type: string
+        result:
+          allOf:
+            - type: string
+            - $ref: '#/components/schemas/KResults'
+            - $ref: '#/components/schemas/KProduct'
+        resultType:
+          allOf:
+            - $ref: '#/components/schemas/KOutputType'
+          default: TEXT
+        status:
+          $ref: '#/components/schemas/GenerationStatus'
+        title:
+          type: string
+        workspaceId:
+          type: string
+    GenerationSummary:
+      type: object
+      properties:
+        applicationId:
+          type: string
+        applicationName:
+          type: string
+        createdAt:
+          type: integer
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/GenerationStatus'
+        title:
+          type: string
+      required:
+        - id
+        - applicationId
+        - title
+        - status
+        - createdAt
+    GenerationSummaryList:
+      type: object
+      properties:
+        generations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenerationSummary'
+        nextToken:
+          type: string
+    CreateGenerationRequest:
+      type: object
+      properties:
+        applicationId:
+          minLength: 1
+          type: string
+        documentId:
+          type: string
+        environment:
+          $ref: '#/components/schemas/Environment'
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+        manual:
+          default: false
+          type: boolean
+    ProductGenre:
+      enum:
+        - Custom
+        - Amazon
+      title: ProductGenre
+      type: string
+    Marketplace:
+      type: string
+      enum:
+        - AU
+        - BE
+        - BR
+        - CA
+        - CN
+        - EG
+        - IT
+        - DE
+        - FR
+        - IN
+        - JP
+        - MX
+        - NL
+        - PL
+        - SA
+        - SG
+        - ES
+        - SE
+        - TR
+        - AE
+        - US
+        - UK
+      title: Marketplace
+    AmazonProduct:
+      properties:
+        asin:
+          title: Asin
+          type: string
+        brand:
+          title: Brand
+          type: string
+        createdAt:
+          type: integer
+        description:
+          type: string
+        feature:
+          type: string
+        features:
+          items:
+            type: string
+          type: array
+        genre:
+          allOf:
+            - $ref: '#/components/schemas/ProductGenre'
+          default: Amazon
+        id:
+          type: string
+        images:
+          items:
+            type: string
+          type: array
+        keywords:
+          items:
+            type: string
+          type: array
+        link:
+          type: string
+        mainImage:
+          type: string
+        marketplace:
+          $ref: '#/components/schemas/Marketplace'
+        specification:
+          type: string
+        tags:
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+        updatedAt:
+          type: integer
+        videos:
+          items:
+            type: string
+          type: array
+      required:
+        - id
+        - title
+        - brand
+        - description
+        - specification
+        - feature
+        - mainImage
+        - link
+        - createdAt
+        - updatedAt
+        - asin
+        - marketplace
+      type: object
+    CustomProduct:
+      properties:
+        brand:
+          type: string
+        createdAt:
+          type: integer
+        description:
+          type: string
+        feature:
+          type: string
+        genre:
+          allOf:
+            - $ref: '#/components/schemas/ProductGenre'
+          default: Custom
+        id:
+          type: string
+        images:
+          items:
+            type: string
+          type: array
+        keywords:
+          items:
+            type: string
+          type: array
+        link:
+          type: string
+        mainImage:
+          type: string
+        specification:
+          type: string
+        tags:
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+        updatedAt:
+          type: integer
+        videos:
+          items:
+            type: string
+          type: array
+      required:
+        - id
+        - title
+        - brand
+        - description
+        - specification
+        - feature
+        - mainImage
+        - link
+        - createdAt
+        - updatedAt
+      type: object
+    ProductList:
+      description: 'Product List'
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/CustomProduct'
+              - $ref: '#/components/schemas/AmazonProduct'
+        nextToken:
+          type: string
+    CreateCustomProductRequest:
+      properties:
+        brand:
+          default: ''
+          type: string
+        description:
+          default: ''
+          type: string
+        feature:
+          default: ''
+          type: string
+        images:
+          items:
+            type: string
+          type: array
+        keywords:
+          items:
+            type: string
+          type: array
+        link:
+          default: ''
+          type: string
+        mainImage:
+          default: ''
+          type: string
+        specification:
+          default: ''
+          type: string
+        title:
+          default: ''
+          type: string
+        videos:
+          items:
+            type: string
+          type: array
+      title: CreateCustomProductRequest
+      type: object
+    CreateAmazonImportJobRequest:
+      title: CreateAmazonImportJobRequest
+      type: object
+      properties:
+        asins:
+          description: ASIN list to import from Amazon, max 20 items
+          items:
+            type: string
+          type: array
+        marketplace:
+          $ref: '#/components/schemas/Marketplace'
+      required:
+        - marketplace
+    ImportJob:
+      type: object
+      properties:
+        failure:
+          items:
+            type: string
+          type: array
+        id:
+          type: string
+        importing:
+          items:
+            type: string
+          type: array
+        success:
+          items:
+            type: string
+          type: array
+      required:
+        - id
+    ErrorBody:
+      type: object
+      properties:
+        code:
+          type: string
+        id:
+          type: string
+        message:
+          type: string
+        target:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+      required: [ code, id, message ]
+    FaultBody:
+      type: object
+      properties:
+        code:
+          type: string
+          default: "InternalFault"
+        message:
+          type: string
+          default: "服务内部错误, 请联系管理员"
