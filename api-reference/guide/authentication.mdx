@@ -1,0 +1,124 @@
+---
+title: 'Authentication'
+description: 'Authenticate your account to get the API AccessToken'
+---
+
+To securely access and interact with Kua.ai's API, you need to authenticate your account and get the API AccessToken. The token is used to authenticate your requests to the API.
+
+## Get API AccessToken
+
+To get the API AccessToken, you need to authenticate your account using the [Authentication API](/api-reference/endpoint/create):
+
+<Card
+    title="Authenticate API"
+    icon="key"
+    href="/api-reference/basic/authenticate"
+>
+    View the Authentication API documentation and code example
+</Card>
+
+Code example to get the API AccessToken:
+
+#### cURL
+
+```bash
+curl -X POST "https://api.kua.ai/core/api/v2/accounts/sessions/email" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@kua.ai",
+    "password": "password"
+    }'
+```
+
+#### Python
+
+```python
+import requests
+
+url = "https://api.kua.ai/core/api/v2/accounts/sessions/email"
+
+headers = {
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "email": "test@kua.ai",
+    "password": "password"
+}
+
+response = requests.post(url, headers=headers, json=payload)
+```
+
+#### JavaScript
+
+```javascript
+const url = "https://api.kua.ai/core/api/v2/accounts/sessions/email";
+const headers = {
+    "Content-Type": "application/json"
+};
+const body = JSON.stringify({
+    email: "test@kua.ai",
+    password: "password"
+});
+
+fetch(url, { method: 'POST', headers: headers, body: body })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+```
+
+Example Output:
+
+```json
+{
+  "accessToken": "<string>",
+  "tokenType": "<string>",
+  "tokenFormat": "<string>",
+  "expiresIn": 123
+}
+```
+
+## Using the API AccessToken
+
+All API endpoints are authenticated using Bearer tokens, you must include the API Access Token int the request headers as an Authorization Bearer token. Below are
+examples of how to include the API Key in requests using cURL, Python and JavaScript.
+
+#### cURL
+
+```bash
+curl -X GET "https://api.kua.ai/core/api/v2/accounts" \
+-H "Authorization: Bearer <AccessToken>"
+```
+
+#### Python
+
+```python
+import requests
+
+# Replace <AccessToken> with your actual access token
+access_token = "<AccessToken>"
+
+url = "https://api.kua.ai/core/api/v2/accounts"
+headers = {
+    "Authorization": f"Bearer {access_token}"
+}
+
+response = requests.get(url, headers=headers)
+```
+
+#### JavaScript
+
+```javascript
+const url = "https://api.kua.ai/core/api/v2/accounts";
+const accessToken = "<AccessToken>"; // Replace <AccessToken> with your actual access token
+
+const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${accessToken}`
+};
+
+fetch(url, { method: 'GET', headers: headers })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+```

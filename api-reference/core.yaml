@@ -1,0 +1,118 @@
+openapi: "3.0.2"
+info:
+  title: Kua.ai Core API
+  version: "1.0"
+servers:
+  - url: https://api.kua.ai/core/api/v2
+paths:
+  /accounts/sessions/email:
+    post:
+      description: 'Authenticate your account with email and password to get API Access Token'
+      operationId: EmailLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailLoginRequest'
+        required: true
+      responses:
+        '201':
+          description: 'Authenticate successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Fault'
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: '未认证成功错误'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                $ref: '#/components/schemas/ErrorBody'
+            required: [ error ]
+    Error:
+      description: '用户请求错误, 包括: 400, 401, 404等'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                $ref: '#/components/schemas/ErrorBody'
+            required: [ error ]
+    Fault:
+      description: '服务内部错误, 请联系管理员'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FaultBody'
+  schemas:
+    EmailLoginRequest:
+      description: '登录请求'
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 5
+          maxLength: 64
+        password:
+          type: string
+          minLength: 6
+          maxLength: 128
+      required: [ email, password ]
+    AccessToken:
+      description: '认证Token'
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          default: Bearer
+        tokenFormat:
+          type: string
+          default: jwt
+        expiresIn:
+          type: integer
+          format: int64
+          default: 86400
+    ErrorBody:
+      type: object
+      properties:
+        code:
+          type: string
+        id:
+          type: string
+        message:
+          type: string
+        target:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+      required: [ code, id, message ]
+    FaultBody:
+      type: object
+      properties:
+        code:
+          type: string
+          default: "InternalFault"
+        message:
+          type: string
+          default: "服务内部错误, 请联系管理员"
