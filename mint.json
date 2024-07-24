@@ -1,29 +1,29 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Kua.ai",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/logo.png",
+    "light": "/logo/logo.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#7f56d9",
+    "light": "#7f56d9",
+    "dark": "#7f56d9",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#7f56d9",
+      "to": "#7f56d9"
     }
   },
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:alex@kua.ai"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Get Started",
+    "url": "https://app.kua.ai"
   },
   "tabs": [
     {
@@ -33,59 +33,69 @@
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "Kua.ai",
+      "icon": "house",
+      "url": "https://kua.ai"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://kua.ai/blog"
+    },
+    {
+      "name": "Tutorials",
+      "icon": "youtube",
+      "url": "https://www.youtube.com/@kuaaigc"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.com/invite/H28JX22wzv"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Guide",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        "api-reference/guide/authentication"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Endpoints",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        {
+          "group": "Basic",
+          "pages": [
+            "api-reference/basic/authenticate"
+          ]
+        },
+        {
+          "group": "Product",
+          "pages": [
+            "api-reference/products/list-products",
+            "api-reference/products/get-product",
+            "api-reference/products/create-custom-product",
+            "api-reference/products/delete-product",
+            "api-reference/products/import-amazon-product",
+            "api-reference/products/get-import-job"
+          ]
+        },
+        {
+          "group": "Generation",
+          "pages": [
+            "api-reference/generations/create-generation",
+            "api-reference/generations/list-generations",
+            "api-reference/generations/get-generation"
+          ]
+        }
       ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "x": "https://x.com/hiKuaai",
+    "github": "https://github.com/kua-ai",
+    "linkedin": "https://www.linkedin.com/company/kua-ai",
+    "facebook": "https://www.facebook.com/groups/kuaaisaas",
+    "youtube": "https://www.youtube.com/@kuaaigc"
   }
 }
