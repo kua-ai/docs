@@ -57,7 +57,8 @@
     {
       "group": "Guide",
       "pages": [
-        "api-reference/guide/authentication"
+        "api-reference/guide/authentication",
+        "api-reference/guide/asin-to-blog"
       ]
     },
     {
