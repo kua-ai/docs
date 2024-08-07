@@ -54,7 +54,7 @@ headers = {
 
 response = requests.request("POST", url, json=payload, headers=headers)
 
-print(response.text)
+print(response.json())
 ```
 
 ### Check the status of the import job
@@ -71,10 +71,11 @@ access_token = "{AccessToken}"
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": f"Bearer ${access_token}"
+    "Authorization": f"Bearer {access_token}"
 }
 
 response = requests.request("GET", url, headers=headers)
+print(response.json())
 ```
 
 ### Get Product Information
@@ -89,10 +90,11 @@ url = "https://api-beta.kua.ai/weaver/api/v2/products/B0953SDCRG"
 access_token = "{AccessToken}"
 
 headers = {
-    "Authorization": f"Bearer ${access_token}"
+    "Authorization": f"Bearer {access_token}"
 }
 
 response = requests.request("GET", url, headers=headers)
+print(response.json())
 ```
 
 ## Generate a Blog Post
@@ -140,24 +142,23 @@ access_token = "{AccessToken}"
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": f"Bearer ${access_token}"
+    "Authorization": f"Bearer {access_token}"
 }
-
 payload = {
-    "applicationId": "295237189739591252",
+    "applicationId": "295231319878644967",
     "inputs": {
         "Imageposition": "2nd",
         "Language": "American English",
         "Link": "https://kua.ai",
         "PrimaryKeyword": "Elon Musk",
-        "Product": "{{_product['B0787P86ZZ']}}" # Replace B0787P86ZZ with your actual ASIN, {{_product['{ASIN}']}}
+        "Product": "{{_product['B0953SDCRG']}}"  # Replace B0787P86ZZ with your actual ASIN, {{_product['{ASIN}']}}
     }
 }
-
 response = requests.request("POST", url, json=payload, headers=headers)
+print(response.json())
 ```
 
-### Check the status of the generation
+Check the status of the generation
 
 After you have created the blog post, you can check the status of the generation job by using the [Get Generation API](/api-reference/generations/get-generation).
 
@@ -166,8 +167,18 @@ import requests
 
 url = "https://api-beta.kua.ai/weaver/api/v2/generations/{id}"
 
-response = requests.request("GET", url)
+# Replace {AccessToken} with your actual access token
+access_token = "{AccessToken}"
 
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {access_token}",
+    "Accept": "application/json"
+}
+
+response = requests.request("GET", url, headers=headers)
+
+print(response.json())
 if response.json()["status"] == "SUCCESS":
     print("Generation completed")
     print(response.json()["result"])
